@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -56,8 +58,8 @@ const (
 func main() {
 	fmt.Println("Welcome to calculator, enter the string:")
 
-	var text string
-	fmt.Scan(&text)
+	reader := bufio.NewReader(os.Stdin)
+	text, _ := reader.ReadString('\n')
 	s := strings.ReplaceAll(text, " ", "")
 	calculate(strings.ToUpper(strings.TrimSpace(s)))
 }
