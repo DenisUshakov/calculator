@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-var roman = map[string]int{
+var romanInt = map[string]int{
 	"X":    10,
 	"IX":   9,
 	"VIII": 8,
@@ -18,20 +18,22 @@ var roman = map[string]int{
 	"II":   2,
 	"I":    1,
 }
-var convIntToRoman = [10]int{
-	10,
-	9,
-	8,
-	7,
-	6,
-	5,
-	4,
-	3,
-	2,
-	1,
+
+var intRoman = map[int]string{
+	10: "X",
+	9:  "IX",
+	8:  "VIII",
+	7:  "VII",
+	6:  "VI",
+	5:  "V",
+	4:  "IV",
+	3:  "III",
+	2:  "II",
+	1:  "I",
 }
 
 var a, b *int
+
 var operators = map[string]func() int{
 	"+": func() int { return *a + *b },
 	"-": func() int { return *a - *b },
@@ -41,42 +43,26 @@ var operators = map[string]func() int{
 var data []string
 
 const (
-	LOW = "Вывод ошибки, так как строка " +
-		"не является математической операцией."
-	HIGH = "Вывод ошибки, так как формат математической операции " +
+	LOW  = "Ошибка. Cтрока не является математической операцией."
+	HIGH = "Ошибка. Формат математической операции " +
 		"не удовлетворяет заданию — два операнда и один оператор (+, -, /, *)."
-	SCALE = "Вывод ошибки, так как используются " +
-		"одновременно разные системы счисления."
-	DIV = "Вывод ошибки, так как в римской системе " +
-		"нет отрицательных чисел."
-	ZERO  = "Вывод ошибки, так как в римской системе нет числа 0."
-	RANGE = "Калькулятор умеет работать только с арабскими целыми " +
+	SCALE = "Ошибка. Используются одновременно разные системы счисления."
+	DIV   = "Ошибка. В римской системе нет отрицательных чисел."
+	ZERO  = "Ошибка. В римской системе нет числа 0."
+	RANGE = "Ошибка. Калькулятор умеет работать только с арабскими целыми " +
 		"числами или римскими цифрами от 1 до 10 включительно"
 )
 
 func main() {
 	fmt.Println("Welcome to calculator, enter the string:")
 
-	/*scanner := bufio.NewScanner(os.Stdin)
-	for scanner.Scan() {
-		s := strings.ReplaceAll(scanner.Text(), " ", "")
-		base(strings.ToUpper(strings.TrimSpace(s)))
-		//fmt.Println(scanner.Text()) // Println will add back the final '\n'
-	}
-	if err := scanner.Err(); err != nil {
-		fmt.Fprintln(os.Stderr, "reading standard input:", err)
-	}*/
-	//reader := bufio.NewReader(os.Stdin)
-	//reader := "1+2"
-	//for {
-	console := "10 + 10"
-	//console, _ := reader.ReadString('\n')
-	s := strings.ReplaceAll(console, " ", "")
-	base(strings.ToUpper(strings.TrimSpace(s)))
-	//}
+	var text string
+	fmt.Scan(&text)
+	s := strings.ReplaceAll(text, " ", "")
+	calculate(strings.ToUpper(strings.TrimSpace(s)))
 }
 
-func base(s string) {
+func calculate(s string) {
 	var operator string
 	var stringsFound int
 	numbers := make([]int, 0)
@@ -90,6 +76,7 @@ func base(s string) {
 			}
 		}
 	}
+
 	switch {
 	case len(operator) > 1:
 		panic(HIGH)
@@ -111,7 +98,7 @@ func base(s string) {
 		panic(SCALE)
 	case 0:
 		errCheck := numbers[0] > 0 && numbers[0] < 11 &&
-			numbers[1] > 0 && numbers[1] < 11
+			numbers[1] > 0 && numbers[1] < 11 // должно выполняться условие число > 0 и число < 11, второе аналогично
 		if val, ok := operators[operator]; ok && errCheck {
 			a, b = &numbers[0], &numbers[1]
 			fmt.Println(val())
@@ -120,7 +107,7 @@ func base(s string) {
 		}
 	case 2:
 		for _, elem := range romans {
-			if val, ok := roman[elem]; ok && val > 0 && val < 11 {
+			if val, ok := romanInt[elem]; ok && val > 0 && val < 11 {
 				romansToInt = append(romansToInt, val)
 			} else {
 				panic(RANGE)
@@ -140,17 +127,20 @@ func intToRoman(romanResult int) {
 	} else if romanResult < 0 {
 		panic(DIV)
 	}
+
 	for romanResult > 0 {
-		for _, elem := range convIntToRoman {
-			for i := elem; i <= romanResult; {
-				for index, value := range roman {
-					if value == elem {
-						romanNum += index
-						romanResult -= elem
-					}
-				}
+		for i := 10; i > 0; i -= 1 {
+			v := min(i, romanResult)
+			val, ok := intRoman[v]
+			if ok {
+				romanNum += val
+				romanResult -= v
+				break
+			} else {
+				panic("not found roman")
 			}
 		}
 	}
+
 	fmt.Println(romanNum)
 }
