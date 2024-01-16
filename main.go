@@ -9,6 +9,10 @@ import (
 )
 
 var romanInt = map[string]int{
+	"C":    100,
+	"XC":   90,
+	"L":    50,
+	"XL":   40,
 	"X":    10,
 	"IX":   9,
 	"VIII": 8,
@@ -22,16 +26,37 @@ var romanInt = map[string]int{
 }
 
 var intRoman = map[int]string{
-	10: "X",
-	9:  "IX",
-	8:  "VIII",
-	7:  "VII",
-	6:  "VI",
-	5:  "V",
-	4:  "IV",
-	3:  "III",
-	2:  "II",
-	1:  "I",
+	100: "C",
+	90:  "XC",
+	50:  "L",
+	40:  "XL",
+	10:  "X",
+	9:   "IX",
+	8:   "VIII",
+	7:   "VII",
+	6:   "VI",
+	5:   "V",
+	4:   "IV",
+	3:   "III",
+	2:   "II",
+	1:   "I",
+}
+
+var intMain = [14]int{
+	100,
+	90,
+	50,
+	40,
+	10,
+	9,
+	8,
+	7,
+	6,
+	5,
+	4,
+	3,
+	2,
+	1,
 }
 
 var a, b *int
@@ -140,15 +165,13 @@ func intToRoman(romanResult int) {
 	}
 
 	for romanResult > 0 {
-		for i := 10; i > 0; i -= 1 {
-			v := min(i, romanResult)
+		for _, elem := range intMain {
+			v := min(elem, romanResult)
 			val, ok := intRoman[v]
 			if ok {
 				romanNum += val
 				romanResult -= v
 				break
-			} else {
-				panic("not found roman")
 			}
 		}
 	}
