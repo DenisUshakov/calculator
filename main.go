@@ -58,10 +58,19 @@ const (
 func main() {
 	fmt.Println("Welcome to calculator, enter the string:")
 
-	reader := bufio.NewReader(os.Stdin)
-	text, _ := reader.ReadString('\n')
-	s := strings.ReplaceAll(text, " ", "")
-	calculate(strings.ToUpper(strings.TrimSpace(s)))
+	scanner := bufio.NewScanner(os.Stdin)
+	for scanner.Scan() {
+		text := scanner.Text()
+		if len(text) == 0 {
+			return
+		} else {
+			s := strings.ReplaceAll(text, " ", "")
+			calculate(strings.ToUpper(strings.TrimSpace(s)))
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		fmt.Fprintln(os.Stderr, "reading standard input:", err)
+	}
 }
 
 func calculate(s string) {
